@@ -5,10 +5,22 @@ export default function Tree() {
 
     const [leaves, setLeaves] = useState([]);
 
+    // // using json tree data
+    // useEffect(() => {
+    //     fetch("/leaves_1000.json")
+    //         .then((res) => res.json())
+    //         .then((data) => setLeaves(data));
+    // }, []);
+
     useEffect(() => {
-        fetch("/leaves_1000.json")
+        fetch("/api/get-tree")
             .then((res) => res.json())
-            .then((data) => setLeaves(data));
+            .then((data) => {
+                if (data.success && data.treeState?.leaves) {
+                    setLeaves(data.treeState.leaves);
+                }
+            })
+            .catch((err) => console.error("Error fetching treeState:", err));
     }, []);
 
     return (
