@@ -1,13 +1,19 @@
 import Image from "next/image";
-
+import { useEffect, useState } from "react";
 
 export default function Tree() {
-    return (
-        // <div className="flex justify-center items-center h-screen bg-black">
-        //     <Image src="/tree.svg" alt="Digital Tree" width={390} height={844} />
-        // </div>
 
-        <div className="relative flex justify-center items-center bg-black min-h-screen overflow-auto">
+    const [leaves, setLeaves] = useState([]);
+
+    useEffect(() => {
+        fetch("/leaves_1000.json")
+            .then((res) => res.json())
+            .then((data) => setLeaves(data));
+    }, []);
+
+    return (
+
+        <div className="relative flex justify-center items-center min-h-screen overflow-auto">
             {/* Tree image */}
             <Image
                 src="/tree.svg"
@@ -17,8 +23,30 @@ export default function Tree() {
                 className="block"
             />
 
+            {/* Leaves container */}
+            <div
+                className="absolute top-0 left-1/2 -translate-x-1/2 z-10"
+                style={{ width: 390, height: 844 }}
+            >
+                {leaves
+                    .filter((leaf) => leaf.on)
+                    .map((leaf) => (
+                        <div
+                            key={leaf.id}
+                            className="absolute"
+                            style={{
+                                top: `${leaf.y}px`,
+                                left: `${leaf.x}px`,
+                                width: "25px",
+                                height: "25px",
+                                backgroundColor: leaf.color,
+                            }}
+                        />
+                    ))}
+            </div>
+
             {/* Icons container (absolute positioned over the tree) */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ width: 390, height: 844 }}>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20" style={{ width: 390, height: 844 }}>
 
                 {/* Spotify Icon */}
                 <a
