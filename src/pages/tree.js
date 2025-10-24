@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import TreeIcon from "@/components/TreeIcon";
+import { RECTANGLE_BOUNDS, TRIANGLE_BOUNDS } from "@/lib/utils";
 
 export default function Tree() {
 
@@ -14,16 +15,16 @@ export default function Tree() {
     // }, []);
 
     // using the Redis db
-    // useEffect(() => {
-    //     fetch("/api/get-tree")
-    //         .then((res) => res.json())
-    //         .then((data) => {
-    //             if (data.success && data.treeState?.leaves) {
-    //                 setLeaves(data.treeState.leaves);
-    //             }
-    //         })
-    //         .catch((err) => console.error("Error fetching treeState:", err));
-    // }, []);
+    useEffect(() => {
+        fetch("/api/get-tree")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success && data.treeState?.leaves) {
+                    setLeaves(data.treeState.leaves);
+                }
+            })
+            .catch((err) => console.error("Error fetching treeState:", err));
+    }, []);
 
     return (
 
@@ -55,10 +56,33 @@ export default function Tree() {
                                 width: "25px",
                                 height: "25px",
                                 backgroundColor: leaf.color,
+                                transform: "translate(-50%, -50%)",  // moves center to the x/y point
                             }}
                         />
                     ))}
             </div>
+
+
+            {/* Show / hide leaf area */}
+            {/* <div
+                className="absolute top-0 left-1/2 -translate-x-1/2 z-20 border-2 border-blue-400"
+                style={{
+                    width: RECTANGLE_BOUNDS.width,
+                    height: RECTANGLE_BOUNDS.height,
+                    top: RECTANGLE_BOUNDS.top,
+                }}
+            ></div>
+            <div
+                className="absolute left-1/2 -translate-x-1/2 z-20  border-2 border-blue-400"
+                style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: `${TRIANGLE_BOUNDS.baseWidth / 2}px solid transparent`,  // half the base width
+                    borderRight: `${TRIANGLE_BOUNDS.baseWidth / 2}px solid transparent`, // half the base width
+                    borderBottom: `${TRIANGLE_BOUNDS.height}px solid rgba(59, 130, 246, 0.3)`, // height + color
+                    top: TRIANGLE_BOUNDS.top, // position relative to the tree image
+                }}
+            ></div> */}
 
             {/* Icons container (absolute positioned over the tree) */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20" style={{ width: 390, height: 844 }}>
