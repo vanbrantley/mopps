@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
-export default function TreeIcon({ src, alt, x, y, href, size = 75 }) {
+export default function TreeIcon({ src, alt, x, y, href, size = 90 }) {
     const [isPressed, setIsPressed] = useState(false);
 
     return (
