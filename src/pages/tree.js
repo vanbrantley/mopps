@@ -2,29 +2,34 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import TreeIcon from "@/components/TreeIcon";
 import { RECTANGLE_BOUNDS, TRIANGLE_BOUNDS } from "@/lib/utils";
+import FallVisualizer from "@/components/FallVisualizer";
 
 export default function Tree() {
 
     const [leaves, setLeaves] = useState([]);
+    const [showVisualizer, setShowVisualizer] = useState(true); // toggle
 
     // // using json tree data
     // useEffect(() => {
     //     fetch("/leaves_1000.json")
     //         .then((res) => res.json())
-    //         .then((data) => setLeaves(data));
+    //         .then((data) => {
+    //             setInitialLeaves(data);  // keep original green state
+    //             setLeaves(data);         // working copy for simulation
+    //         });
     // }, []);
 
-    // using the Redis db
-    useEffect(() => {
-        fetch("/api/get-tree")
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.success && data.treeState?.leaves) {
-                    setLeaves(data.treeState.leaves);
-                }
-            })
-            .catch((err) => console.error("Error fetching treeState:", err));
-    }, []);
+    // // using the Redis db
+    // useEffect(() => {
+    //     fetch("/api/get-tree")
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //             if (data.success && data.treeState?.leaves) {
+    //                 setLeaves(data.treeState.leaves);
+    //             }
+    //         })
+    //         .catch((err) => console.error("Error fetching treeState:", err));
+    // }, []);
 
     return (
 
@@ -38,30 +43,6 @@ export default function Tree() {
                 height={844}
                 className="block"
             />
-
-            {/* Leaves container */}
-            <div
-                className="absolute top-0 left-1/2 -translate-x-1/2 z-10"
-                style={{ width: 390, height: 844 }}
-            >
-                {leaves
-                    .filter((leaf) => leaf.on)
-                    .map((leaf) => (
-                        <div
-                            key={leaf.id}
-                            className="absolute"
-                            style={{
-                                top: `${leaf.y}px`,
-                                left: `${leaf.x}px`,
-                                width: "25px",
-                                height: "25px",
-                                backgroundColor: leaf.color,
-                                transform: "translate(-50%, -50%)",  // moves center to the x/y point
-                            }}
-                        />
-                    ))}
-            </div>
-
 
             {/* Show / hide leaf area */}
             {/* <div
@@ -83,6 +64,51 @@ export default function Tree() {
                     top: TRIANGLE_BOUNDS.top, // position relative to the tree image
                 }}
             ></div> */}
+
+            {/* Leaves container */}
+            {/* <div
+                className="absolute top-0 left-1/2 -translate-x-1/2 z-10"
+                style={{ width: 390, height: 844 }}
+            >
+                {leaves
+                    .filter((leaf) => leaf.on)
+                    .map((leaf) => (
+                        <div
+                            key={leaf.id}
+                            className="absolute"
+                            style={{
+                                top: `${leaf.y}px`,
+                                left: `${leaf.x}px`,
+                                width: "25px",
+                                height: "25px",
+                                backgroundColor: leaf.color,
+                                transform: "translate(-50%, -50%)",  // moves center to the x/y point
+                            }}
+                        />
+                    ))}
+            </div> */}
+
+            {/* Fall Visualizer */}
+            {showVisualizer && (
+                <div
+                    className="absolute top-0 left-1/2 -translate-x-1/2 z-9999"
+                    style={{ width: 390, height: 844 }}
+                >
+                    <FallVisualizer />
+                </div>
+            )}
+            {/* Fall visualizer overlay */}
+            {/* {showVisualizer && <FallVisualizer width={390} height={650} totalDays={70} />} */}
+
+            {/* Toggle button */}
+            <div>
+                <button
+                    onClick={() => setShowVisualizer(!showVisualizer)}
+                    className="absolute top-5 right-5 bg-gray-200 p-2 rounded z-30"
+                >
+                    {showVisualizer ? "Hide Visualizer" : "Show Visualizer"}
+                </button>
+            </div>
 
             {/* Icons container (absolute positioned over the tree) */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20" style={{ width: 390, height: 844 }}>
