@@ -1,36 +1,25 @@
-import { redis } from '@/lib/redis';
-import { getSeasonPhase } from '@/lib/utils';
+// /api/update-tree.js
+import { updateTreeForDate, getSeasonPhase } from "@/lib/utils";
+import { redis } from "@/lib/redis"; // your existing redis connection
 
 export default async function handler(req, res) {
     try {
-        // Optional date param: ?date=2025-10-15
+        // Optional query param ?date=2025-10-15
         const dateParam = req.query.date;
         const currentDate = dateParam ? new Date(dateParam) : new Date();
 
-        const { season, phase } = getSeasonPhase(currentDate);
-
         // Fetch current tree state from DB
         const treeStateStr = await redis.get("treeState");
-        const tree = JSON.parse(treeStateStr);
+        const tree = treeStateStr ? JSON.parse(treeStateStr) : { leaves: [] };
 
-        // No changes in summer or winter
-        if (season === "summer" || season === "winter") {
-            return tree;
-        }
+        // Use updateTreeForDate to modify leaves for this date
+        const updatedTree = updateTreeForDate(tree.leaves, currentDate);
 
-        // fall
-
-
-
-        // spring
-
-
+        // Save updated tree back to Redis
+        await redis.set("treeState", JSON.stringify(updatedTree));
 
         res.status(200).json({
-            date: currentDate.toISOString(),
-            monthDay: `${currentDate.getMonth() + 1}-${currentDate.getDate()}`,
-            season,
-            phase
+            tree: updatedTree,
         });
     } catch (error) {
         console.error(error);

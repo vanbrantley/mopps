@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import TreeIcon from "@/components/TreeIcon";
 import { RECTANGLE_BOUNDS, TRIANGLE_BOUNDS } from "@/lib/utils";
 import FallVisualizer from "@/components/FallVisualizer";
+import YearVisualizer from "@/components/YearVisualizer";
 
 export default function Tree() {
 
     const [leaves, setLeaves] = useState([]);
-    const [showVisualizer, setShowVisualizer] = useState(true); // toggle
+    const [showFallVisualizer, setShowFallVisualizer] = useState(true); // toggle
+    const [showYearVisualizer, setShowYearVisualizer] = useState(true);
 
     // // using json tree data
     // useEffect(() => {
@@ -89,26 +91,24 @@ export default function Tree() {
             </div> */}
 
             {/* Fall Visualizer */}
-            {showVisualizer && (
+            {/* {showFallVisualizer && (
                 <div
                     className="absolute top-0 left-1/2 -translate-x-1/2 z-9999"
                     style={{ width: 390, height: 844 }}
                 >
                     <FallVisualizer />
                 </div>
-            )}
-            {/* Fall visualizer overlay */}
-            {/* {showVisualizer && <FallVisualizer width={390} height={650} totalDays={70} />} */}
+            )} */}
 
-            {/* Toggle button */}
-            <div>
-                <button
-                    onClick={() => setShowVisualizer(!showVisualizer)}
-                    className="absolute top-5 right-5 bg-gray-200 p-2 rounded z-30"
+            {/* Year Visualizer */}
+            {showYearVisualizer && (
+                <div
+                    className="absolute top-0 left-1/2 -translate-x-1/2 z-9999"
+                    style={{ width: 390, height: 844 }}
                 >
-                    {showVisualizer ? "Hide Visualizer" : "Show Visualizer"}
-                </button>
-            </div>
+                    <YearVisualizer />
+                </div>
+            )}
 
             {/* Icons container (absolute positioned over the tree) */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20" style={{ width: 390, height: 844 }}>

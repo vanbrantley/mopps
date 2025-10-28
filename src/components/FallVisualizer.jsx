@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function FallVisualizer({ width = 390, height = 650, totalDays = 70 }) {
+export default function FallVisualizer({ width = 390, height = 650, totalDays = 40 }) {
 
     const [day, setDay] = useState(0);
     const [leaves, setLeaves] = useState([]);
@@ -16,32 +16,49 @@ export default function FallVisualizer({ width = 390, height = 650, totalDays = 
     }, []);
 
     const trunkX = width / 2;
-    // normalized progress (0 → 1)
-    const progress = Math.min(1, day / totalDays);
-    // maximum ellipse dimensions
-    const maxOuterRx = width / 2;
+    const progress = Math.min(1, day / totalDays); // normalized progress (0 → 1)
+
+    // phase-based ellipse scaling
+    const phases = {
+        early: { outerScale: 0.8, midScale: 0.95, innerScale: 0.88 },
+        mid: { outerScale: 0.8, midScale: 0.9, innerScale: 0.75 },
+        late: { outerScale: 0.6, midScale: 0.85, innerScale: 0.7 },
+    };
+
+    // pick current phase based on day
+    let phase;
+    if (day <= 7) phase = phases.early;
+    else if (day <= 16) phase = phases.mid;
+    else phase = phases.late;
+
+    // const maxOuterRx = width * 0.5;
+    // const maxOuterRx = width * 0.8;
+    const maxOuterRx = width * phase.outerScale;
     const maxOuterRy = height;
+
     // Shrinking ellipses — outer shrinks fully from 100% → 0% over totalDays
     const outer = {
         rx: maxOuterRx * (1 - progress),
         ry: maxOuterRy * (1 - progress),
     };
     const mid = {
-        rx: outer.rx * 0.7,
-        ry: outer.ry * 0.7,
+        // rx: outer.rx * 0.7,
+        // ry: outer.ry * 0.7,
+        // rx: outer.rx * 0.95,
+        // ry: outer.ry * 0.95,
+        rx: outer.rx * phase.midScale,
+        ry: outer.ry * phase.midScale,
     };
     const inner = {
-        rx: outer.rx * 0.4,
-        ry: outer.ry * 0.4,
-    };
-
-    function nextButtonClicked() {
-        setDay(Math.min(totalDays, day + 1));
-        // alert("Button clicked");
+        // rx: outer.rx * 0.4,
+        // ry: outer.ry * 0.4,
+        // rx: outer.rx * 0.88,
+        // ry: outer.ry * 0.88,
+        rx: outer.rx * phase.innerScale,
+        ry: outer.ry * phase.innerScale,
     };
 
     const nextDay = () => setDay(Math.min(totalDays, day + 1));
-    const prevDay = () => setDay(Math.max(0, day - 1));
     const reset = () => {
         setDay(0);
         setLeaves(initialLeaves);
@@ -95,12 +112,6 @@ export default function FallVisualizer({ width = 390, height = 650, totalDays = 
             {/* Buttons below visualizer */}
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
                 <div className="flex gap-2">
-                    <button
-                        onClick={prevDay}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1 px-3 rounded transition-colors"
-                    >
-                        Previous Day
-                    </button>
                     <span className="font-bold text-lg">Day {day}</span>
                     <button
                         onClick={nextDay}
